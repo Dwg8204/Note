@@ -1,0 +1,710 @@
+
+import java.rmi.*;
+import java.rmi.registry.*;
+import java.util.*;
+import RMI.DataService;
+public class SoLonThuK {
+    public static void main(String[] args) throws Exception {
+        //a. Nhận dữ liệu
+        Registry rg = LocateRegistry.getRegistry("203.162.10.109", 1099);
+        DataService sv = (DataService)rg.lookup("RMIDataService");
+        String s = (String) sv.requestData("B21DCCN008", "wzG6G9ji");
+        System.out.println(s);
+        //b. Xử lý dữ liệu
+        int x = s.indexOf(";");
+        String list = s.substring(0, x), k = s.substring(x + 1);
+        ArrayList<Integer>a = new ArrayList<>();
+        int k1 = Integer.parseInt(k.trim());
+        String []tmp = list.trim().split(",");
+        for(String x1: tmp) a.add(Integer.parseInt(x1.trim()));
+        Collections.sort(a);
+        int ans = a.get(a.size() - k1);
+        //c. Gửi dữ liệu
+        sv.submitData("B21DCCN008", "wzG6G9ji", ans);
+        System.out.println(ans);
+    }
+}
+
+// nhóm từ theo nguyên âm
+
+import vn.medianews.*;
+import java.util.*;
+public class NhomTuTheoNguyenAm {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN012", qCode = "32He7sZg"; 
+        CharacterService_Service service = new CharacterService_Service();
+        CharacterService port = service.getCharacterServicePort();
+        List<String> a = port.requestStringArray(msv, qCode);
+        System.out.println(a);
+        Collections.sort(a, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                if(dem(s1)!=dem(s2)) return dem(s1) - dem(s2);
+                return s1.compareTo(s2);
+            }
+        });
+        List<String>ans = new java.util.ArrayList<>();
+        String gr = a.get(0);
+        for(int i = 1;i<a.size();i++){
+            if(dem(a.get(i))==dem(a.get(i - 1))) gr+=", " + a.get(i);
+            else{
+                ans.add(gr);
+                gr = a.get(i);
+            }
+        }
+        ans.add(gr);
+        // c. Triệu gọi phương thức submitCharacterStringArray để gửi mảng đã sắp xếp
+        port.submitCharacterStringArray(msv, qCode, ans);
+    }
+    // Hàm đếm số nguyên âm trong chuỗi
+    private static int dem(String str) {
+        int cnt = 0;
+        // Các ký tự nguyên âm
+        String ngAm = "aeiouAEIOU";
+        for (int i = 0; i < str.length(); i++) {
+            if (ngAm.indexOf(str.charAt(i)) != -1) cnt++;
+        }
+        return cnt;
+    }
+}
+
+
+//quản lý sinh viên
+import vn.medianews.*;
+import java.util.*;
+public class QuanLySinhVien {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN001", qCode = "2RjVBzv0"; // Mã câu hỏi
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        List<StudentY> a = (List<StudentY>) port.requestListStudentY(msv, qCode);
+        for (StudentY x : a) System.out.println(x);
+        System.out.println();
+        Map<String, Float> hsg = new HashMap<>(); //key: tên môn, value: điểm thi cao nhất môn đó
+        for(StudentY x: a){
+            String mon = x.getSubject();
+            Float diemMon = x.getScore();
+            if ((!hsg.containsKey(mon)) || (diemMon > hsg.get(mon))) hsg.put(mon, diemMon);
+        }
+        List<Float>diemMax = new java.util.ArrayList<>(hsg.values());
+        List<StudentY>ans = new java.util.ArrayList<>();
+        for(StudentY x: a){
+            if(diemMax.contains(x.getScore())) ans.add(x);
+        }
+        port.submitListStudentY(msv, qCode, ans);
+    }
+} 
+
+
+đếm số lần xuất hiện
+import vn.medianews.*;
+import java.util.*;
+public class DemSoLanXH {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN002", qCode = "TU4ULIgh"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        System.out.println(a); Collections.sort(a);
+        System.out.println(a);
+        int []cnt = new int[10005];
+        for(int x: a) cnt[x]++;
+        List<String>ans = new java.util.ArrayList<>();
+        for(int x: a){
+            if(cnt[x]>0){
+                String tmp = String.format("%d, %d", x, cnt[x]);
+                ans.add(tmp);
+                cnt[x] = 0;
+            }
+        }
+        for(String x: ans){
+            System.out.println(x);
+        }
+        port.submitDataStringArray(msv, qCode, ans);
+    }
+}
+
+quản lý sản phẩm
+import vn.medianews.*;
+import java.util.*;
+public class QuanLySanPham {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN002", qCode = "itT8hvxF"; // Mã câu hỏi
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        ProductY product = (ProductY) port.requestProductY(msv, qCode);
+        System.out.println(product);
+        float price = product.getPrice(), taxRate = product.getTaxRate(),discount = product.getDiscount();
+        float finalPrice = price * (1 + taxRate / 100) * (1 - discount / 100);
+        product.setFinalPrice(finalPrice);
+        System.out.println(product);
+        port.submitProductY(msv, qCode, product);
+    }
+}
+
+
+lớn nhỏ thứ K
+import vn.medianews.*;
+import java.util.*;
+public class LonNhoThuK {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN003", qCode = "WpaUTFMu"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        int k = a.get(0); a.remove(0);
+        System.out.println(a + " " + k);
+        Collections.sort(a);
+        int nhoThuK = a.get(k - 1), lonThuK = a.get(a.size() - k);
+        List<Integer>ans = new java.util.ArrayList<>(Arrays.asList(lonThuK, nhoThuK));
+        port.submitDataIntArray(msv, qCode, ans);
+    }
+}
+
+sắp xếp chuỗi
+import vn.medianews.*;
+import java.util.*;
+public class SapXepChuoi {
+    public static void main(String[] args) throws Exception {
+        // Cấu hình thông tin
+        String msv = "B21DCCN002", qCode = "x5TIDg1S"; 
+        // Tạo đối tượng dịch vụ từ web service
+        CharacterService_Service service = new CharacterService_Service();
+        CharacterService port = service.getCharacterServicePort();
+        // a. Triệu gọi phương thức requestStringArray từ server 
+        List<String> a = port.requestStringArray(msv, qCode);
+        // b. Sắp xếp các chuỗi theo số lượng nguyên âm
+        Collections.sort(a, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return dem(s1) - dem(s2);
+            }
+        });
+        // c. Triệu gọi phương thức submitCharacterStringArray để gửi mảng đã sắp xếp
+        port.submitCharacterStringArray(msv, qCode, a);
+        System.out.println(a);
+    }
+    // Hàm đếm số nguyên âm trong chuỗi
+    private static int dem(String str) {
+        int cnt = 0;
+        // Các ký tự nguyên âm
+        String ngAm = "aeiouAEIOU";
+        for (int i = 0; i < str.length(); i++) {
+            if (ngAm.indexOf(str.charAt(i)) != -1) cnt++;
+        }
+        return cnt;
+    }
+}
+
+phân loại học lực
+
+import vn.medianews.*;
+import java.util.*;
+public class PhanLoaiHocLuc {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN003", qCode = "qNfIMvid"; // Mã câu hỏi
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        List<Student> a = (List<Student>) port.requestListStudent(msv, qCode);
+        for(Student x: a) System.out.println(x);
+        System.out.println();
+        List<Student>ans = new java.util.ArrayList<>();
+        for(Student x: a){
+            if(x.getScore() >=8.0) ans.add(x);
+            else if (x.getScore() < 5) ans.add(x);
+        }
+        for(Student x: ans) System.out.println(x);
+        port.submitListStudent(msv, qCode, ans);
+    }
+}
+
+
+liệt kê ước số
+import vn.medianews.*;
+import java.util.*;
+public class LietKeUoc {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN004", qCode = "nhFjYg0F"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        int n = (int)port.getDataDouble(msv, qCode);
+        System.out.println(n);
+        List<Integer>ans = new java.util.ArrayList<>();
+        for(int i = 1;i<=n;i++){
+            if(n%i==0) ans.add(i);
+        }
+        ans.add(0, ans.size());
+        System.out.println(ans);
+        port.submitDataIntArray(msv, qCode, ans);
+    }
+}
+
+quản lý nhân viên 1
+import vn.medianews.*;
+import java.util.*;
+public class QuanLyNhanVien {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN004", qCode = "vewbvojZ"; 
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort(); 
+        List<EmployeeY>a = port.requestListEmployeeY(msv, qCode);
+        for(EmployeeY x: a) System.out.println(x);
+        Collections.sort(a, new Comparator<EmployeeY>(){
+            @Override
+            public int compare(EmployeeY o1, EmployeeY o2) {
+                return o1.getStartDate().compare(o2.getStartDate());
+            }
+        });
+        System.out.println();
+        for(EmployeeY x: a) System.out.println(x);
+        port.submitListEmployeeY(msv, qCode, a);
+    }
+}
+
+quản lý nhân viên 2
+import vn.medianews.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+public class QuanLyNhanVien2 {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN084", qCode = "L8CainEX"; 
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        Employee e = port.requestEmployee(msv, qCode);
+        System.out.println(e);
+        String bd = e.getStartDate().toString(), kt = e.getEndDate().toString();
+        bd = bd.substring(0, 10); kt = kt.substring(0, 10);
+        LocalDate stDay = LocalDate.parse(bd), enDay = LocalDate.parse(kt);
+        long tmp = ChronoUnit.DAYS.between(stDay, enDay);
+        int cnt = 0;
+        for(int i = 0;i<=tmp;i++){
+            LocalDate curDay = stDay.plusDays(i);
+            if(curDay.getDayOfWeek().getValue()<=5) cnt++;
+        }
+        e.setWorkingDays(cnt);
+        System.out.println(e);
+        port.submitEmployee(msv, qCode, e);
+    }
+}
+
+
+tìm từ dài nhất
+
+String []a = s.trim().split("\\s+");
+        //
+        String ans = a[0];int res = a[0].length(); int pos = 1;
+        for(int i = 1;i<a.length;i++){
+            if(a[i].length() > res){
+                ans = a[i];
+                res = a[i].length();
+                pos = s.indexOf(ans);
+            }
+        }
+
+
+quản lý khách hàng
+
+import java.util.*;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import vn.medianews.*;
+public class QuanLyKhachHang {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN005", qCode = "aYiLQ3wo";
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        List<CustomerY> cus = (List<CustomerY>) port.requestListCustomerY(msv, qCode);
+        for (CustomerY x: cus) System.out.println(x);
+        System.out.println();
+        LocalDate today = LocalDate.now();
+        List<CustomerY> ans = new ArrayList<>();
+        for (CustomerY x: cus) {
+            String t = x.getLastTransactionDate().toString();
+            t = t.substring(0, 10);
+            LocalDate old = LocalDate.parse(t);
+            long thang = ChronoUnit.MONTHS.between(old, today);
+            if(thang >=6) ans.add(x);
+        }
+        for (CustomerY x: ans) System.out.println(x);
+        port.submitListCustomerY(msv, qCode, ans);
+    }
+}
+
+
+số lớn nhất
+
+import vn.medianews.*;
+import java.util.*;
+public class TimSoLonNhat {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN007", qCode = "RiRH8wfk"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        List<String>a1 = new java.util.ArrayList<>();
+        for(int x: a) a1.add(x + "");
+        Collections.sort(a1);
+        String ans = "";
+        for(String x: a1) ans+=x+ans;
+        port.submitDataString(msv, qCode, ans);
+    }
+}
+
+chuẩn hoá chuỗi
+
+import vn.medianews.*;
+import java.util.*;
+public class ChuanHoaChuoi {
+    public static void main(String[] args) throws Exception {
+        // Cấu hình thông tin
+        String msv = "B21DCCN007", qCode = "sBQjqANT"; 
+        // Tạo đối tượng dịch vụ từ web service
+        CharacterService_Service service = new CharacterService_Service();
+        CharacterService port = service.getCharacterServicePort();
+        // a. Triệu gọi phương thức 
+        String s = port.requestString(msv, qCode);
+        System.out.println(s);
+        //b.
+        s = s.replace('_', ' ');
+        String []tmp = s.trim().split("\\s+");
+        String p = "", c = tmp[0].toLowerCase(), sn = "";
+        for(String x: tmp) p+=chuanhoa(x); 
+        for(int i = 1;i<tmp.length;i++) c+=chuanhoa(tmp[i]);
+        for(String x: tmp) sn+=x.toLowerCase()+"_"; sn = sn.substring(0, sn.length() - 1);
+        List<String>ans = new java.util.ArrayList<>();
+        ans.add(p); ans.add(c); ans.add(sn);
+        System.out.println(ans);
+        //c
+        port.submitCharacterStringArray(msv, qCode, ans);
+    }
+    public static String chuanhoa(String s){
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+    }
+}
+
+
+lọc ký tự
+
+String []sTmp = s1.trim().split(";");
+        String rI = sTmp[0]; String s = sTmp[1];
+        //Đếm
+        int []cnt = new int[10005];
+        for(char x: s.toCharArray()){ 
+            if(Character.isAlphabetic(x)) cnt[x]++;
+        }
+        String res = "";
+        for(char x: s.toCharArray()){ 
+            if(cnt[x] > 0){
+                res+=x;
+                cnt[x] = 0;
+            }
+        }
+        res = rI + ";" + res;
+
+
+quản lý dự án
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import vn.medianews.*;
+import java.util.*;
+public class QuanLyDuAn {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN010", qCode = "R6UOuyyE";
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        List<Project>a = (List<Project>)port.requestListProject(msv, qCode);
+        for(Project p: a) System.out.println(p);
+        System.out.println();
+        List<Project> send = new java.util.ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for(Project x : a){
+            String t = x.getDueDate().toString();
+            t = t.substring(0, 10);
+            LocalDate future = LocalDate.parse(t);
+            long ngay = ChronoUnit.DAYS.between(today, future);
+            if(ngay <=15 && ngay >=0 && x.getCompletionPercentage() >=80.00) send.add(x);
+        }
+        port.submitListProject(msv, qCode, send);
+        for(Project p: send) System.out.println(p);
+    }
+}
+
+quản lý đơn hàng 2
+import vn.medianews.*;
+import java.util.*;
+public class DonHang2 {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN021", qCode = "CuW1L0ev"; 
+        ObjectService_Service service = new ObjectService_Service();
+        ObjectService port = service.getObjectServicePort();
+        List<Order>a = (List<Order>)port.requestListOrder(msv, qCode);
+        for(Order x: a) System.out.println(x);
+        HashMap<String, Float>mp = new HashMap<>();
+        for(Order x: a){
+            String maKH = x.getCustomerId(); float giaTri = x.getAmount();
+            if(!mp.containsKey(maKH)) mp.put(maKH, giaTri);
+            else mp.put(maKH, mp.get(maKH) + giaTri);
+        }
+        float maxGiaTri = 0; String maKHmax = "";
+        for (String maKH: mp.keySet()) {
+            float giaTri = mp.get(maKH);
+            if (giaTri > maxGiaTri) {
+                maxGiaTri = giaTri;
+                maKHmax = maKH;
+            }
+        }
+        List<Order>ans = new java.util.ArrayList<>();
+        for(Order x: a){
+            if(x.getCustomerId().equals(maKHmax)) ans.add(x);
+        }
+        port.submitListOrder(msv, qCode, ans);
+    }
+}
+
+
+
+xoay vòng ký tự
+
+import vn.medianews.*;
+import java.util.*;
+public class XoayVongKyTu {
+    public static void main(String[] args) throws Exception {
+        String msv = "B21DCCN016", qCode = "YDcPHFgN"; 
+        CharacterService_Service service = new CharacterService_Service();
+        CharacterService port = service.getCharacterServicePort();
+        List<Integer>a = port.requestCharacter(msv, qCode);
+        int timeRot = a.get(0)%(a.size());
+        Collections.rotate(a, timeRot);
+        port.submitCharacterCharArray(msv, qCode, a);
+    }
+}
+
+
+loại bỏ trùng nhau
+import vn.medianews.*;
+import java.util.*;
+public class LoaiBoTrungNhau {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN033", qCode = "E2Axwwf3"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        System.out.println(a);
+        int []cnt = new int[10005];
+        for(int x: a) cnt[x]++;
+        List<Integer>ans = new java.util.ArrayList<>();
+        for(int x: a){
+            if(cnt[x]>0){
+                ans.add(x);
+                cnt[x] = 0;
+            }
+        }
+        System.out.println(ans);
+        port.submitDataIntArray(msv, qCode, ans);
+    }
+}
+
+
+tổng các số
+import vn.medianews.*;
+import java.util.*;
+public class TongCacSo {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN082", qCode = "hnVAHv3I"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        System.out.println(a);
+        int tong = 0;
+        for(int x: a) tong+=x;
+        System.out.println(tong);
+        port.submitDataInt(msv, qCode, tong);
+    }
+}
+
+sắp xếp chẵn lẻ
+import vn.medianews.*;
+import java.util.*;
+public class SXChanLe {
+    public static void main(String[] args) throws Exception{
+        String msv = "B21DCCN088", qCode = "0BEtJAT9"; 
+        DataService_Service service = new DataService_Service();
+        DataService port = service.getDataServicePort();
+        List<Integer>a = port.getData(msv, qCode);
+        System.out.println(a);
+        List<Integer>chan = new java.util.ArrayList<>(), le = new java.util.ArrayList<>(), ans = new java.util.ArrayList<>();
+        for(int x: a){
+            if(x%2==0) chan.add(x);
+            else le.add(x);
+        }
+        int k = Integer.min(chan.size(), le.size());
+        for(int i = 0;i < k;i++){
+            ans.add(chan.get(i)); ans.add(le.get(i));
+        }
+        int k1 = chan.size() - k, k2 = le.size() - k;
+        if(k1 > 0){
+            for(int i = k;i<chan.size();i++) ans.add(chan.get(i));
+        }
+        if(k2 > 0){
+            for(int i = k;i<le.size();i++) ans.add(le.get(i));
+        }
+        System.out.println(ans);
+        port.submitDataIntArray(msv, qCode, ans);
+    }
+}
+
+
+UDP
+ public static void main(String[] args) throws Exception{
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress sA = InetAddress.getByName("203.162.10.109");
+        int sP = 2208;
+        //a.
+        String code = ";B21DCCN002;EbTMtFBH";
+        DatagramPacket dpGui = new DatagramPacket(code.getBytes(), code.length(), sA, sP);
+        socket.send(dpGui);
+        //b.
+        byte []buffer = new byte[1024];
+        DatagramPacket dpNhan = new DatagramPacket(buffer, buffer.length);
+        socket.receive(dpNhan);
+        //
+        String s1 = new String(dpNhan.getData());
+        System.out.println(s1);
+        String []sTmp = s1.trim().split(";");
+        String rI = sTmp[0]; String s = sTmp[1];
+        //Đếm
+        int []cnt = new int[10005];
+        for(char x: s.toCharArray()){ 
+            if(Character.isAlphabetic(x)) cnt[x]++;
+        }
+        String res = "";
+        for(char x: s.toCharArray()){ 
+            if(cnt[x] > 0){
+                res+=x;
+                cnt[x] = 0;
+            }
+        }
+        res = rI + ";" + res;
+        System.out.println(res);
+        //Gửi
+        DatagramPacket dpGui1 = new DatagramPacket(res.getBytes(), res.length(), sA, sP);
+        socket.send(dpGui1);
+    }
+
+TCP
+
+public static void main(String[] args) throws Exception{
+        Socket socket = new Socket("203.162.10.109", 2207);
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        String code = "B22DCCN008;UsLuWWET ";
+        out.writeUTF(code);
+        out.flush();
+        int n = in.readInt(); System.out.println(n);
+        String bin = Integer.toBinaryString(n), hex = Integer.toHexString(n).toUpperCase();
+        out.writeUTF(bin + ";" + hex); out.flush();
+        in.close();out.close();socket.close();
+    }
+
+
+public class DayConKhongLapDaiNhat {
+    public static void main(String[] args) throws Exception{
+        //
+        Socket socket = new Socket("203.162.10.109", 2206);
+        InputStream in = socket.getInputStream();
+        OutputStream out = socket.getOutputStream();
+        //
+        String code = "B21DCCN214;HyHAk4P5";
+        out.write(code.getBytes());
+        out.flush();
+        //
+        byte[] buffer = new byte[1024];
+        int bytesRead = in.read(buffer);
+        String s = new String(buffer, 0, bytesRead);
+        System.out.println(s);
+        //
+        int ans = 0;//độ dài xâu con dài nhất không lặp
+        String strMax = "";//dãy con dài nhất không lặp
+        String res = "";
+        for(int i = 0;i<s.length();i++){
+            int []cnt = new int[256];
+            String tmp = "";
+            for(int j = i;j<s.length();j++){
+                if(cnt[s.charAt(j)]==1) break;
+                else{
+                    cnt[s.charAt(j)]=1;
+                    tmp+=s.charAt(j);
+                    if(tmp.length() > strMax.length()){ 
+                        strMax = tmp;
+                        ans = tmp.length();
+                    }
+                }
+            }
+        }
+        res = String.format("%s;%d", strMax, ans);
+        System.out.println(res);
+        //
+        out.write(res.getBytes());
+        out.flush();
+    }
+}
+
+public static void main(String[] args) throws Exception{
+        Socket socket = new Socket("203.162.10.109", 2208);
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        String code = "B21DCCN003;vYbP7vOA";
+        bw.write(code); bw.newLine(); bw.flush();
+        String s1 = br.readLine(); System.out.println(s1);
+        String s2 = br.readLine(); System.out.println(s2);
+        String ans = "";
+        int []cnt = new int[10005]; 
+        for(char x: s2.toCharArray()) cnt[x]++;
+        for(char x: s1.toCharArray()){
+            if(cnt[x]==0) ans+=x;
+        }
+        System.out.println(ans);
+        bw.write(ans); bw.newLine(); bw.flush();
+    }
+
+
+import java.io.*;
+import java.net.*;
+import TCP.Customer;
+public class KhachHang {
+    public static void main(String[] args) throws Exception{
+        // Kết nối tới server
+        Socket socket = new Socket("203.162.10.109", 2209);
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        // a. Gửi mã sinh viên và mã câu hỏi
+        String code = "B21DCCN004;6Tw3qHNF";
+        out.writeObject(code);
+        out.flush();
+        // b. Nhận đối tượng Customer từ server
+        Customer customer = (Customer) in.readObject();
+        System.out.println(customer);
+        // c. Chuẩn hóa thông tin khách hàng
+        //Chuẩn hoá tên
+        String []tenTmp = customer.getName().split("\\s+");
+        String tenMoi = "";
+        tenMoi+=tenTmp[tenTmp.length - 1].toUpperCase()+", ";
+        for(int i = 0;i<tenTmp.length - 1;i++) tenMoi+=Character.toUpperCase(tenTmp[i].charAt(0)) + tenTmp[i].substring(1).toLowerCase() + " ";
+        customer.setName(tenMoi.trim());
+        //Chuẩn hoá ngày sinh
+        String []nsTmp = customer.getDayOfBirth().split("-");
+        String nsMoi = nsTmp[1] + "/" + nsTmp[0] + "/" + nsTmp[2];
+        customer.setDayOfBirth(nsMoi);
+        //Tạo username
+        String userMoi = "";
+        for(int i = 0;i<tenTmp.length - 1;i++) userMoi+=Character.toLowerCase(tenTmp[i].charAt(0));
+        userMoi+=tenTmp[tenTmp.length - 1].toLowerCase();
+        customer.setUserName(userMoi);
+        // d. Gửi lại đối tượng đã được sửa đổi
+        System.out.println(customer);
+        out.writeObject(customer);
+        out.flush();
+    }
+
+    
+}
