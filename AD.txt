@@ -1,0 +1,129 @@
+LIBMAN
+Nhân viên =>  lớp NhanVien (Trừu tượng): id, username, password
+Nhân viên quản lý => lớp QuanLy kế thừa NhanVien, maNhanVien
+Nhân viên thư viện => lớp ThuThu  kế thừa NhanVien, maThuThu
+Bạn đọc => Lớp KhachHang, maKhachHang, email, diaChi
+Tài liệu => lớp TaiLieu: id, ten, soLuong
+Nhà cung cấp => lớp NhaCungCap : id, ten, diaChi, soDienThoai
+Phiếu mượn => lớp PhieuMuon: id, KhachHang, ThuThu, ngayMuon, ngayTra, trangThai
+Phiếu nhập => lớp PhieuNhap:  : id, QuanLy, NhaCungCap, ngayNhap, tongTien
+Quan hệ:
+1 Khách hàng có nhiều phiếu mượn: quan hệ 1-n
+1 Phiếu mượn có nhiều tài liệu, 1 tài liệu có nhiều phiếu mượn: quan hệ n-n => đề xuất lớp ChiTietPhieuMuon
+1 Phiếu nhập có nhiều tài liệu, 1 tài liệu có nhiều phiếu nhập: quan hệ n-n => đề xuất lớp ChiTietPhieuNhap
+1 nhà cung cấp có nhiều phiếu nhập: quan hệ 1-n
+1 quản lý thực hiện nhiều phiếu nhập: quan hệ 1-n
+1 thủ thư quản lý nhiều phiếu mượn: quan hệ 1-n
+
+
+QLST
+Thành viên: lớp ThanhVien (Trừu tượng): id, username, password, soDienThoai
+Nhân viên =>  lớp NhanVien (Trừu tượng) kế thừa ThanhVien, maNhanVien, viTri
+Nhân viên quản lý => lớp NVQuanLy kế thừa NhanVien
+Nhân viên Kho => lớp NVKho kế thừa NhanVien
+Nhân viên bán hàng => lớp NVBanHang  kế thừa NhanVien
+Khách hàng => Lớp KhachHang kế thừa ThanhVien, maKhachHang
+Mặt hàng => lớp HangHoa: id, ten, soLuong
+Nhà cung cấp => lớp NhaCungCap : id, ten, diaChi, soDienThoai
+Đơn hàng  => lớp DonHang: id, KhachHang, NVBanHang, ngayMua, tongTien
+Phiếu nhập => lớp PhieuNhap:  : id, QuanLy, NhaCungCap, ngayNhap, tongTien
+Quan hệ:
+1 Khách hàng có nhiều đơn hàng: quan hệ 1-n
+1 đơn hàng có nhiều mặt hàng, 1 mặt hàng có nhiều đơn hàng: quan hệ n-n => đề xuất lớp ChiTietDonHang
+1 Phiếu nhập có nhiều mặt hàng, 1 mặt hàng có nhiều phiếu nhập: quan hệ n-n => đề xuất lớp ChiTietPhieuNhap
+1 nhà cung cấp có nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên kho thực hiện nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên bán hàng quản lý nhiều đơn hàng: quan hệ 1-n
+CINEMAN
+Thành viên: lớp ThanhVien (Trừu tượng): id, username, password, soDienThoai
+Nhân viên =>  lớp NhanVien (Trừu tượng) kế thừa ThanhVien, maNhanVien, viTri
+Nhân viên quản lý => lớp NVQuanLy kế thừa NhanVien
+Nhân viên bán hàng => lớp NVBanHang  kế thừa NhanVien
+Khách hàng => Lớp KhachHang kế thừa ThanhVien, maKhachHang
+Phim => lớp Phim: id, ten, moTa
+Lịch chiếu => lớp LichChieu: id, thoiGian, Phim, PhongChieu
+Phòng chiếu => lớp PhongChieu: id, soPhong, soGhe, Ghe
+Ghế => lớp Ghe: id, loaiGhe
+Vé   => lớp Ve: id, KhachHang, NVBanHang, ngayMua, giaVe, LichChieu
+Quan hệ:
+1 Khách hàng có nhiều vé: quan hệ 1-n
+1 phim có nhiều vé: quan hệ 1-n
+1 nhân viên bán hàng quản lý nhiều vé: quan hệ 1-n
+1 phòng chiếu có nhiều ghế: quan hệ 1-n
+1 phòng chiếu có nhiều lịch chiếu: quan hệ 1-n
+1 phim có nhiều lịch chiếu: quan hệ 1-n
+
+RESTMAN
+Thành viên: lớp ThanhVien (Trừu tượng): id, username, password, soDienThoai
+Nhân viên =>  lớp NhanVien (Trừu tượng) kế thừa ThanhVien, maNhanVien, viTri
+Nhân viên quản lý => lớp NVQuanLy kế thừa NhanVien
+Nhân viên Kho => lớp NVKho kế thừa NhanVien
+Nhân viên bán hàng => lớp NVBanHang  kế thừa NhanVien
+Khách hàng => Lớp KhachHang kế thừa ThanhVien, maKhachHang
+Nguyên liệu => lớp NguyenLieu: id, ten, soLuong, gia
+Món ăn => lớp MonAn: id, ten, moTa, NguyenLieu, gia
+Combo => Lớp ComBo: id, ten, gia, MonAn
+Bàn => Lớp Ban: id, soBan, moTa
+Nhà cung cấp => lớp NhaCungCap : id, ten, diaChi, soDienThoai
+HoaDon  => lớp HoaDon: id, KhachHang, NVBanHang, ngayMua, tongTien, Ban, trangThai
+Phiếu nhập => lớp PhieuNhap:  : id, QuanLy, NhaCungCap, ngayNhap, tongTien
+Quan hệ:
+1 Khách hàng có nhiều đơn hàng: quan hệ 1-n
+1 đơn hàng có nhiều món ăn, 1 món ăn có nhiều đơn hàng: quan hệ n-n => đề xuất lớp ChiTietDonHang
+1 Phiếu nhập có nhiều nguyên liệu, 1 nguyên liệu có nhiều phiếu nhập: quan hệ n-n => đề xuất lớp ChiTietPhieuNhap
+1 nhà cung cấp có nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên kho thực hiện nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên bán hàng quản lý nhiều đơn hàng: quan hệ 1-n
+1 combo có nhiều món ăn , 1 món ăn có thể nằm trong nhiều combo: quan hệ n-n => đề xuất lớp ChiTietComBo
+1 món ăn có nhiều nguyên liệu,  1 nguyên liệu có thể nằm trong nhiều món ăn: quan hệ n-n => đề xuất lớp ChiTietMonAn
+
+GARAMAN
+Thành viên: lớp ThanhVien (Trừu tượng): id, username, password, soDienThoai
+Nhân viên =>  lớp NhanVien (Trừu tượng) kế thừa ThanhVien, maNhanVien, viTri
+Nhân viên quản lý => lớp NVQuanLy kế thừa NhanVien
+Nhân viên Kho => lớp NVKho kế thừa NhanVien
+Nhân viên bán hàng => lớp NVBanHang  kế thừa NhanVien
+Khách hàng => Lớp KhachHang kế thừa ThanhVien, maKhachHang
+Phụ tùng => lớp PhuTung: id, ten, soLuong, gia
+Dịch vụ => lớp DichVu: id, ten, moTa, PhuTung, gia, NVKyThuat
+Nhà cung cấp => lớp NhaCungCap : id, ten, diaChi, soDienThoai
+HoaDon  => lớp HoaDon: id, KhachHang, NVBanHang, ngayMua, tongTien, trangThai
+Phiếu nhập => lớp PhieuNhap:  : id, QuanLy, NhaCungCap, ngayNhap, tongTien
+Lịch hẹn => lớp LichHen: id, KhachHang, ngayHen
+Nhân viên kỹ thuật => lớp NVKyThuat kế thừa lớp NhanVien
+Quan hệ:
+1 Khách hàng có nhiều hoá đơn: quan hệ 1-n
+1 hoá đơn có nhiều dịch vụ, 1 dịch vụ có nhiều hoá đơn: quan hệ n-n => đề xuất lớp ChiTietHoaDon
+1 Phiếu nhập có nhiều phụ tùng, 1 phụ tùng có nhiều phiếu nhập: quan hệ n-n => đề xuất lớp ChiTietPhieuNhap
+1 nhà cung cấp có nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên kho thực hiện nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên bán hàng quản lý nhiều hoá đơn: quan hệ 1-n
+1 phụ tùng có nhiều dịch vụ , 1 dịch vụ có nhiều phụ tùng: quan hệ n-n => đề xuất lớp ChiTietDichVu
+1 khách hàng có nhiều lịch hẹn: quan hệ 1-n
+
+
+
+
+
+
+
+SHOPMAN
+Thành viên: lớp ThanhVien (Trừu tượng): id, username, password, soDienThoai
+Nhân viên =>  lớp NhanVien (Trừu tượng) kế thừa ThanhVien, maNhanVien, viTri
+Nhân viên quản lý => lớp NVQuanLy kế thừa NhanVien
+Nhân viên bán hàng => lớp NVBanHang  kế thừa NhanVien
+Khách hàng => Lớp KhachHang kế thừa ThanhVien, maKhachHang
+Hàng hoá => lớp HangHoa: id, ten, soLuong, gia
+Nhà cung cấp => lớp NhaCungCap : id, ten, diaChi, soDienThoai
+HoaDon  => lớp HoaDon: id, KhachHang, NVBanHang, ngayMua, tongTien, trangThai
+Phiếu nhập => lớp PhieuNhap:  : id, QuanLy, NhaCungCap, ngayNhap, tongTien
+Quan hệ:
+1 Khách hàng có nhiều hoá đơn: quan hệ 1-n
+1 hoá đơn có nhiều hàng hoá, 1 hàng hoá có nhiều hoá đơn: quan hệ n-n => đề xuất lớp ChiTietHoaDon
+1 Phiếu nhập có nhiều hàng hoá, 1 hàng hoá có nhiều phiếu nhập: quan hệ n-n => đề xuất lớp ChiTietPhieuNhap
+1 nhà cung cấp có nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên quản lý thực hiện nhiều phiếu nhập: quan hệ 1-n
+1 nhân viên bán hàng quản lý nhiều hoá đơn: quan hệ 1-n
+
+
+
